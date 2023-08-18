@@ -1,41 +1,15 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
+const Contact = require("./models/contact");
 const app = express();
 const PORT = process.env.PORT || 3001;
-const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(express.static("build"));
-
-let data = [
-	{
-		id: 1,
-		name: "Arto Hellas",
-		number: "040-123456",
-	},
-	{
-		id: 2,
-		name: "Ada Lovelace",
-		number: "39-44-5323523",
-	},
-	{
-		id: 3,
-		name: "Dan Abramov",
-		number: "12-43-234345",
-	},
-	{
-		id: 4,
-		name: "Mary Poppendieck",
-		number: "39-23-6423122",
-	},
-	{
-		id: 5,
-		name: "Slabe Newman",
-		number: "39-23-6434122",
-	},
-];
 
 function generateID() {
 	//get the current max id of the array
@@ -45,8 +19,12 @@ function generateID() {
 }
 
 app.get("/api/persons/", (req, res) => {
-	res.json(data);
+	Contact.find({}).then((result) => {
+		res.json(result);
+	});
+	mongoose.connection.close();
 });
+// });
 
 app.get("/api/info/", (req, res) => {
 	const numberofpeople = Object.keys(data).length;
@@ -82,20 +60,24 @@ app.post("/api/persons/", (req, res) => {
 			error: "content missing",
 		});
 	}
+	const current_list = Contact.find({});
 
-	if (data.find((item) => item.name === body.name)) {
+	if (current_list.find((item) => item.name === body.name)) {
 		return res.status(400).json({
 			error: "name must be unique",
 		});
 	}
 
-	newPerson = {
-		id: generateID(),
+	const newContact = new Contact({
 		name: body.name,
 		number: body.number,
-	};
+	});
 
-	data = data.concat(newPerson);
+	newContact.save().then((result) => {
+		console.log("contact saved!");
+		mongoose.connection.close();
+	});
+
 	res.send(newPerson);
 });
 
