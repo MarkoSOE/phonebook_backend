@@ -3,6 +3,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const Contact = require("./models/contact");
+const { request } = require("http");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -45,10 +46,18 @@ app.get("/api/persons/:id", (req, res) => {
 	res.json(result);
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-	const id = Number(req.params.id);
-	data = data.filter((note) => note.id !== id);
-	res.status(204).end();
+app.delete("/api/persons/:id", (req, res, next) => {
+	Contact.findByIdAndRemove(req.params.id)
+		.then((contact) => {
+			if (contact) {
+				res.json(contact);
+			} else {
+				res.status(404).end();
+			}
+		})
+		.catch((error) => {
+			next(error);
+		});
 });
 
 app.post("/api/persons/", (req, res) => {
