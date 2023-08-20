@@ -30,7 +30,6 @@ app.get("/api/persons/", (req, res) => {
 	Contact.find({}).then((result) => {
 		res.json(result);
 	});
-	mongoose.connection.close();
 });
 // });
 
