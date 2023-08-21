@@ -55,7 +55,6 @@ app.get("/api/persons/:id", (req, res) => {
 });
 
 app.delete("/api/persons/:id", (req, res, next) => {
-	console.log("this is the ID", req.params.id);
 	Contact.findByIdAndRemove(req.params.id)
 		.then((contact) => {
 			if (contact) {
@@ -78,13 +77,6 @@ app.post("/api/persons/", (req, res) => {
 			error: "content missing",
 		});
 	}
-	const current_list = Contact.find({});
-
-	// if (current_list.find((item) => item.name === body.name)) {
-	// 	return res.status(400).json({
-	// 		error: "name must be unique",
-	// 	});
-	// }
 
 	const newContact = new Contact({
 		name: body.name,
@@ -93,10 +85,8 @@ app.post("/api/persons/", (req, res) => {
 
 	newContact.save().then((result) => {
 		console.log("contact saved!");
-		mongoose.connection.close();
+		res.json(newContact);
 	});
-
-	res.send(newContact);
 });
 
 app.listen(PORT, () => {
