@@ -56,12 +56,8 @@ app.get("/api/persons/:id", (req, res) => {
 
 app.delete("/api/persons/:id", (req, res, next) => {
 	Contact.findByIdAndRemove(req.params.id)
-		.then((contact) => {
-			if (contact) {
-				res.json(contact);
-			} else {
-				res.status(404).end();
-			}
+		.then((result) => {
+			response.status(204).end();
 		})
 		.catch((error) => {
 			next(error);
