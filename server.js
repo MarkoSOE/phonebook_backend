@@ -8,9 +8,10 @@ const { request } = require("http");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const cors = require("cors");
 const corsOptions = {
 	origin: "*",
-	credentials: true,
+	credentials: true, //access-control-allow-credentials:true
 	optionSuccessStatus: 200,
 };
 
@@ -28,6 +29,7 @@ function generateID() {
 
 app.get("/api/persons/", (req, res) => {
 	Contact.find({}).then((result) => {
+		console.log(result);
 		res.json(result);
 	});
 });
