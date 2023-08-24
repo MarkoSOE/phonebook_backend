@@ -15,8 +15,21 @@ mongoose
 	});
 
 const contactSchema = new mongoose.Schema({
-	name: String,
-	number: String,
+	name: {
+		type: String,
+		minLength: 3,
+		required: true,
+	},
+	number: {
+		type: String,
+		validate: {
+			validator: function (v) {
+				return /^(?:\d{3}-\d{5,}|\d{2}-\d{6,})$/.test(v);
+			},
+			message: (props) => `${props.value} is not a valid phone number`,
+		},
+		required: [true, `User phone number required`],
+	},
 });
 
 contactSchema.set("toJSON", {
@@ -26,26 +39,5 @@ contactSchema.set("toJSON", {
 		delete returnedObject.__v;
 	},
 });
-
-// const Contact = mongoose.model("Contact", contactSchema);
-
-// if (process.argv.length == 3) {
-// 	Contact.find({}).then((result) => {
-// 		result.forEach((contact) => {
-// 			console.log(contact);
-// 		});
-// 		mongoose.connection.close();
-// 	});
-// } else {
-// 	const contact = new Contact({
-// 		name: process.argv[3],
-// 		number: process.argv[4],
-// 	});
-
-// 	contact.save().then(() => {
-// 		console.log(`added ${contact.name} number ${contact.number} to phonebook`);
-// 		mongoose.connection.close();
-// 	});
-// }
 
 module.exports = mongoose.model("Contact", contactSchema);
